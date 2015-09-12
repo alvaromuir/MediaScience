@@ -3,7 +3,9 @@ package com.vzmediascience
 import java.io._
 
 import com.google.api.client.http.{HttpResponse}
+import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.{Charsets, Strings}
+import com.google.api.services.dfareporting.model
 import com.google.api.services.dfareporting.model.{FileList, ReportList}
 
 import scala.collection.JavaConversions._
@@ -21,7 +23,7 @@ case class Reports(USER_PROFILE_ID: Long) {
     var reports = new ReportList
     var nextPageToken: String = null
     do {
-      reports = reporting.reports.list(USER_PROFILE_ID).setFields(fields).setPageToken(nextPageToken).execute()
+      reports = reporting.reports.list(USER_PROFILE_ID).setFields(fields).setPageToken(nextPageToken).execute
 
       for(report <- reports.getItems) {
         println(s"ID: ${report.getId} -- '${report.getName}', a ${report.getType} report")
@@ -37,7 +39,7 @@ case class Reports(USER_PROFILE_ID: Long) {
     var nextPageToken: String = null
 
     do {
-      files = reporting.files.list(USER_PROFILE_ID).setFields(fields).setPageToken(nextPageToken).execute()
+      files = reporting.files.list(USER_PROFILE_ID).setFields(fields).setPageToken(nextPageToken).execute
 
       for (file <- files.getItems) {
         println(s"ID: ${file.getId} -- '${file.getFileName}', status: ${file.getStatus}")
@@ -48,20 +50,34 @@ case class Reports(USER_PROFILE_ID: Long) {
 
   }
 
-  def listReportFiles(reportId: Long) {
+
+  def listReportFiles(reportId: Long, limit: Int = 7) {
     val fields = "nextPageToken,items(fileName,id,status)"
     var files = new FileList
     var nextPageToken: String = null
-
+    var total = 0
     do {
-      files = reporting.reports.files.list(USER_PROFILE_ID, reportId).setFields(fields).setPageToken(nextPageToken).execute()
-
-      for (file <- files.getItems) {
-        println(s"ID: ${file.getId}, status: ${file.getStatus}")
-      }
-
+      files = getReportFiles(reportId, fields, nextPageToken)
+        for (file <- files.getItems.take(limit - total))  {
+          val report = getFileInfo(reportId, file.getId)
+          println(s"${report.getDateRange.getEndDate} | ID: ${report.getId} | status: ${report.getStatus} ")
+          total += 1
+        }
       nextPageToken = files.getNextPageToken
-    } while (!files.getItems.isEmpty && !Strings.isNullOrEmpty(nextPageToken))
+    } while (total < limit && !files.getItems.isEmpty && !Strings.isNullOrEmpty(nextPageToken))
+  }
+
+
+  def getReportFiles(reportId: Long, fields: String, nextPageToken: String): FileList = {
+    reporting.reports.files.list(USER_PROFILE_ID, reportId)
+      .setFields(fields)
+      .setPageToken(nextPageToken)
+      .setMaxResults(7)
+      .execute
+  }
+
+  def getFileInfo(reportId: Long, fileId: Long):model.File = {
+    reporting.reports().files().get(USER_PROFILE_ID, reportId, fileId).execute
   }
 
   def downloadFile(reportId: Long, fileId: Long) {
@@ -69,9 +85,7 @@ case class Reports(USER_PROFILE_ID: Long) {
     val outputStream: FileOutputStream = new FileOutputStream("report.txt")
     val writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"))
     try {
-      val reader = new BufferedReader(new InputStreamReader(fileContents.getContent(), Charsets.UTF_8))
-
-//      var line: String = null
+      val reader = new BufferedReader(new InputStreamReader(fileContents.getContent, Charsets.UTF_8))
 
       while (reader.readLine() != null) {
         val line = reader.readLine()
@@ -83,5 +97,5 @@ case class Reports(USER_PROFILE_ID: Long) {
       fileContents.disconnect()
     }
   }
-  
+
 }

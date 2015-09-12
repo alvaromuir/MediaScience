@@ -21,9 +21,10 @@ object Run {
       .addOption("u", "userId", true, "DCM profile id")
       .addOption("A", "all-reports", false, "list all reports for account")
       .addOption("L", "file-list", false, "list all files for specific report")
+      .addOption("I", "file-info", false, "specific report ID number, required for downloading a file")
       .addOption("D", "download-file", false, "download specific file from report")
-      .addOption("R", "report-id", true, "specific report ID number, required for downloading a file")
-      .addOption("F", "file-id", true, "specific file ID number, required for downloading a file")
+      .addOption("R", true, "specific report ID number, required for downloading a file")
+      .addOption("F", true, "specific file ID number, required for downloading a file")
 
     val parser: CommandLineParser = new DefaultParser()
     val cmd: CommandLine = parser.parse(opt, args)
@@ -56,6 +57,20 @@ object Run {
           }
         }
 
+        if (cmd.hasOption("I")) {
+          if (!cmd.hasOption("R") || !cmd.hasOption("F")) {
+            println(s"$name -D requires a report number and file number.")
+            println
+            f.printHelp(name, opt)
+            System.exit(0)
+          } else {
+            val reportId = cmd.getOptionValue("R").toLong
+            val fileId = cmd.getOptionValue("F").toLong
+
+            print(reports.getFileInfo(reportId, fileId).toPrettyString)
+            System.exit(0)
+          }
+        }
         if (cmd.hasOption("D")) {
           if (!cmd.hasOption("R") || !cmd.hasOption("F")) {
             println(s"$name -D requires a report number and file number.")

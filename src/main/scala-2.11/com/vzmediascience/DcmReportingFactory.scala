@@ -31,15 +31,7 @@ object DcmReportingFactory {
     val clientSecrets: GoogleClientSecrets = GoogleClientSecrets.load(
       JSON_FACTORY, new InputStreamReader(DcmReportingFactory.getClass.getResourceAsStream("/client_secret.json")))
 
-    if(clientSecrets.getDetails.getClientId.startsWith("Enter")
-      || clientSecrets.getDetails.getClientSecret.startsWith("Enter ")) {
-      println("""Enter Client ID and Secret from https://console.developers.google.com/project into
-        dfareporting-java-sample/src/main/resources/client_secrets.json""")
-      System.exit(1)
-    }
-
     val flow:GoogleAuthorizationCodeFlow = new GoogleAuthorizationCodeFlow.Builder(httpTransport, JSON_FACTORY, clientSecrets, SCOPES).setDataStoreFactory(dataStoreFactory).build
-
     new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user")
   }
 
@@ -52,7 +44,6 @@ object DcmReportingFactory {
       new HttpRequestInitializer() {
 
 //        this is overridden to ensure gip'd downloads
-
         def initialize(request: HttpRequest) {
           credential.initialize(request)
           request.getHeaders()
@@ -63,4 +54,5 @@ object DcmReportingFactory {
       .setApplicationName("vzmediascience-platform-1.0")
       .build()
   }
+
 }

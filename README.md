@@ -11,17 +11,17 @@ $java -jar target/scala-2.11/MediaScience-assembly-1.0.jar -u DCM_PROFILE_ID -A
 
 To list all files for a given report -R
 ```
-$java -jar MediaScience-assembly-1.0.jar -u DCM_PROFILE_ID -L -R 123455678
+$java -jar MediaScience-assembly-1.0.jar -u DCM_PROFILE_ID -L -R REPORT_ID
 ```
 
 Pretty print report info with  -I flag with the report id -R and file number -F
 ```
-java -jar MediaScience-assembly-1.0.jar -u 1511370 -I -R 27154768 -F 142808810
+java -jar MediaScience-assembly-1.0.jar -u DCM_PROFILE_ID -I -R REPORT_ID -F FILE_ID
 ```
 
 To download a report use the -D flag with the report id -R and file number -F
 ```
-java -jar MediaScience-assembly-1.0.jar -u 1511370 -D -R 27154768 -F 142808810
+java -jar MediaScience-assembly-1.0.jar -u DCM_PROFILE_ID -D -R REPORT_ID -F FILE_ID
 ```
 
 Requires scala and all the stuff in the build file

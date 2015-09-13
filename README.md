@@ -1,5 +1,5 @@
 Work in progress, scala API for DCM reporting
-Requires a "native" client_secrets.json (grab one from your google console)
+Requires a "native" client_secrets.json (grab one from your google console), to be placed in src/main/resources
 
 
 usage:

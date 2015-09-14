@@ -11,8 +11,9 @@ $java -jar target/scala-2.11/MediaScience-assembly-1.0.jar -u DCM_PROFILE_ID -A
 
 To list all files for a given report -R
 ```
-$java -jar MediaScience-assembly-1.0.jar -u DCM_PROFILE_ID -L -R REPORT_ID
+$java -jar MediaScience-assembly-1.0.jar -u DCM_PROFILE_ID -L -R REPORT_ID -N [limit]
 ```
+by default, the limit is 7 (last 7 days). Thus, the -N flag is optional
 
 Pretty print report info with  -I flag with the report id -R and file number -F
 ```

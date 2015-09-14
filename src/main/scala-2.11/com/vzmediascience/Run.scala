@@ -21,6 +21,7 @@ object Run {
       .addOption("u", "userId", true, "DCM profile id")
       .addOption("A", "all-reports", false, "list all reports for account")
       .addOption("L", "file-list", false, "list all files for specific report")
+      .addOption("N", true, "number of files to retrieve")
       .addOption("I", "file-info", false, "specific report ID number, required for downloading a file")
       .addOption("D", "download-file", false, "download specific file from report")
       .addOption("R", true, "specific report ID number, required for downloading a file")
@@ -51,8 +52,12 @@ object Run {
             System.exit(0)
           } else {
             val reportId = cmd.getOptionValue("R").toLong
-
-            reports.listReportFiles(reportId)
+            if(cmd.hasOption("N")) {
+              val limit = cmd.getOptionValue("N").toInt
+              reports.listReportFiles(reportId, limit)
+            } else {
+              reports.listReportFiles(reportId)
+            }
             System.exit(0)
           }
         }
